@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from '@/utils/supabase/server'
+import ProjectCarousel from './components/ProjectCarousel'
 
 // Default hardcoded fallbacks
 const DEFAULT_HERO_TITLE = "Muebles que inspiran tu espacio."
@@ -17,6 +18,7 @@ export default async function Home() {
   let heroSubtitle = DEFAULT_HERO_SUBTITLE
   let services = DEFAULT_SERVICES
   let products: any[] = []
+  let projects: any[] = []
 
   try {
     const supabase = await createClient()
@@ -41,6 +43,12 @@ export default async function Home() {
     if (dbProducts) {
       products = dbProducts
     }
+
+    // 4. Fetch projects
+    const { data: dbProjects } = await supabase.from('landing_proyectos').select('*').order('orden')
+    if (dbProjects) {
+      projects = dbProjects
+    }
   } catch (err) {
     console.error("Error fetching dynamic landing page data:", err)
   }
@@ -62,6 +70,7 @@ export default async function Home() {
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium">
             <Link href="#servicios" className="hover:text-primary transition-colors">Servicios</Link>
+            <Link href="#proyectos" className="hover:text-primary transition-colors">Galería</Link>
             {products.length > 0 && (
               <Link href="#productos" className="hover:text-primary transition-colors">Productos</Link>
             )}
@@ -130,6 +139,19 @@ export default async function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Proyectos Recientes (Galería Slider) */}
+        <section id="proyectos" className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Proyectos Recientes</h2>
+              <p className="text-gray-500 mt-2 font-light">Echa un vistazo a nuestros últimos trabajos terminados.</p>
+              <div className="w-24 h-1 bg-primary mx-auto mt-6 opacity-80" />
+            </div>
+            
+            <ProjectCarousel dbProjects={projects} />
           </div>
         </section>
 

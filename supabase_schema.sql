@@ -61,6 +61,16 @@ CREATE TABLE IF NOT EXISTS landing_productos (
   orden INT DEFAULT 0
 );
 
+-- Tabla para proyectos realizados (Galería Slider)
+CREATE TABLE IF NOT EXISTS landing_proyectos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  titulo TEXT NOT NULL,
+  descripcion TEXT,
+  imagen_url TEXT NOT NULL,
+  orden INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Habilitar Row Level Security (RLS)
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE facturas ENABLE ROW LEVEL SECURITY;
@@ -68,6 +78,7 @@ ALTER TABLE factura_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE landing_content ENABLE ROW LEVEL SECURITY;
 ALTER TABLE landing_servicios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE landing_productos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE landing_proyectos ENABLE ROW LEVEL SECURITY;
 
 -- Crear políticas para permitir todas las operaciones a usuarios autenticados
 CREATE POLICY "Permitir todo a usuarios autenticados en clientes" 
@@ -88,3 +99,6 @@ CREATE POLICY "Escritura de landing_servicios para admins" ON landing_servicios 
 
 CREATE POLICY "Lectura pública de landing_productos" ON landing_productos FOR SELECT USING (true);
 CREATE POLICY "Escritura de landing_productos para admins" ON landing_productos FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+CREATE POLICY "Lectura pública de landing_proyectos" ON landing_proyectos FOR SELECT USING (true);
+CREATE POLICY "Escritura de landing_proyectos para admins" ON landing_proyectos FOR ALL TO authenticated USING (true) WITH CHECK (true);

@@ -16,6 +16,13 @@ interface ProductItem {
   precio?: number
 }
 
+interface ProjectItem {
+  id?: string
+  titulo: string
+  descripcion: string
+  imagen_url: string
+}
+
 export default function LandingEditorPage() {
   const supabase = createClient()
 
@@ -32,6 +39,9 @@ export default function LandingEditorPage() {
 
   // Products
   const [products, setProducts] = useState<ProductItem[]>([])
+
+  // Projects (Galería Slider)
+  const [projects, setProjects] = useState<ProjectItem[]>([])
 
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState<{ success?: boolean; error?: string }>({})
@@ -59,6 +69,12 @@ export default function LandingEditorPage() {
         const { data: dbProducts } = await supabase.from('landing_productos').select('*').order('orden')
         if (dbProducts) {
           setProducts(dbProducts.map(p => ({ id: p.id, nombre: p.nombre, descripcion: p.descripcion || '', precio: p.precio })))
+        }
+
+        // 4. Load projects
+        const { data: dbProjects } = await supabase.from('landing_proyectos').select('*').order('orden')
+        if (dbProjects) {
+          setProjects(dbProjects.map(pr => ({ id: pr.id, titulo: pr.titulo, descripcion: pr.descripcion || '', imagen_url: pr.imagen_url })))
         }
       } catch (err) {
         console.error("Error loading landing page config:", err)
@@ -95,6 +111,19 @@ export default function LandingEditorPage() {
     setProducts(products.map((p, i) => i === index ? { ...p, [field]: value } : p))
   }
 
+  // Projects Helpers
+  const handleAddProject = () => {
+    setProjects([...projects, { titulo: "", descripcion: "", imagen_url: "" }])
+  }
+
+  const handleRemoveProject = (index: number) => {
+    setProjects(projects.filter((_, i) => i !== index))
+  }
+
+  const handleProjectChange = (index: number, field: keyof ProjectItem, value: string) => {
+    setProjects(projects.map((p, i) => i === index ? { ...p, [field]: value } : p))
+  }
+
   // Save changes to Supabase
   const handleSaveConfig = async () => {
     setSaveStatus({})
@@ -105,8 +134,7 @@ export default function LandingEditorPage() {
         { key: 'hero_subtitle', value: heroSubtitle }
       ])
 
-      // 2. Sync services (delete all and re-insert is simpler for schema sync)
-      // First select existing service IDs to delete
+      // 2. Sync services
       const { data: currentServices } = await supabase.from('landing_servicios').select('id')
       if (currentServices && currentServices.length > 0) {
         await supabase.from('landing_servicios').delete().in('id', currentServices.map(s => s.id))
@@ -137,6 +165,23 @@ export default function LandingEditorPage() {
         }))
         const { error: prodErr } = await supabase.from('landing_productos').insert(productsToInsert)
         if (prodErr) throw prodErr
+      }
+
+      // 4. Sync projects (Galería Slider)
+      const { data: currentProjects } = await supabase.from('landing_proyectos').select('id')
+      if (currentProjects && currentProjects.length > 0) {
+        await supabase.from('landing_proyectos').delete().in('id', currentProjects.map(p => p.id))
+      }
+
+      if (projects.length > 0) {
+        const projectsToInsert = projects.map((p, index) => ({
+          titulo: p.titulo,
+          descripcion: p.descripcion,
+          imagen_url: p.imagen_url,
+          orden: index
+        }))
+        const { error: projErr } = await supabase.from('landing_proyectos').insert(projectsToInsert)
+        if (projErr) throw projErr
       }
 
       setSaveStatus({ success: true })
@@ -255,6 +300,73 @@ export default function LandingEditorPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Gallery / Recent Projects Slider */}
+        <div className="bg-white rounded-xl border border-border-color p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <span className="w-2 h-6 bg-primary rounded-full"></span>
+              Proyectos Recientes (Galería Carrusel)
+            </h2>
+            <button
+              onClick={handleAddProject}
+              className="text-xs font-semibold text-primary bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              + Agregar Proyecto
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            {projects.length === 0 ? (
+              <div className="text-center py-6 text-gray-400 text-sm">
+                No hay proyectos en la galería. Se mostrarán imágenes de ejemplo hasta que agregues alguno aquí.
+              </div>
+            ) : (
+              projects.map((project, index) => (
+                <div key={index} className="p-4 rounded-lg bg-gray-50 border border-gray-200 relative">
+                  <button
+                    onClick={() => handleRemoveProject(index)}
+                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xs font-bold"
+                  >
+                    Eliminar
+                  </button>
+                  <div className="grid grid-cols-12 gap-3">
+                    <div className="col-span-12 md:col-span-6">
+                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Título del Proyecto</label>
+                      <input
+                        type="text"
+                        value={project.titulo}
+                        onChange={(e) => handleProjectChange(index, 'titulo', e.target.value)}
+                        placeholder="ej. Cocina Modular Moderna"
+                        className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
+                      />
+                    </div>
+                    <div className="col-span-12 md:col-span-6">
+                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Enlace / URL de la Imagen</label>
+                      <input
+                        type="text"
+                        value={project.imagen_url}
+                        onChange={(e) => handleProjectChange(index, 'imagen_url', e.target.value)}
+                        placeholder="ej. https://images.unsplash.com/..."
+                        className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
+                      />
+                    </div>
+                    <div className="col-span-12">
+                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Descripción Corta</label>
+                      <textarea
+                        value={project.descripcion}
+                        onChange={(e) => handleProjectChange(index, 'descripcion', e.target.value)}
+                        placeholder="Acabados, materiales, ubicación, etc..."
+                        rows={2}
+                        className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
