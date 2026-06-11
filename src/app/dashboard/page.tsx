@@ -185,9 +185,9 @@ export default function DashboardPage() {
   const handleDownloadPDF = async () => {
     try {
       await generatePDFBlobOrUrl('download')
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error generating PDF:", err)
-      alert("Error al generar el PDF")
+      alert("Error al generar el PDF: " + (err.message || err))
     }
   }
 
