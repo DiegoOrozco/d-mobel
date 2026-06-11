@@ -103,7 +103,7 @@ export default async function Home() {
             </p>
             <div className="mt-8 flex gap-4">
               <a 
-                href="https://wa.me/50660485642?text=Hola,%20me%20gustaría%20cotizar%20un%20proyecto%20con%20D'Mobel." 
+                href="https://wa.me/50660485642?text=Hola%2C%20me%20gustar%C3%ADa%20cotizar%20un%20proyecto%20con%20D%27Mobel" 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 bg-primary text-white rounded-full font-medium hover:bg-primary-hover shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
