@@ -47,20 +47,20 @@ export default function DashboardPage() {
   const [items, setItems] = useState<InvoiceItem[]>([
     {
       id: '1',
-      description: 'Mueble de Bar',
-      details: 'mueble de bar color blanco polar y aereo en green con luz en la parte interior y exterior Y puerta de vidrio con marco de aluminio Vidrio trasparente',
-      price: 880000,
+      description: '',
+      details: '',
+      price: 0,
       quantity: 1
     }
   ])
 
   // Notes
   const [notes, setNotes] = useState(
-    "Método de trabajo se da un adelanto del 60%\nAl iniciar y el otro 40% al finalizar la instalación\nDespués del primer pago se estimula 10 días para\nLa instalación"
+    "Método de trabajo se da un adelanto del 50%\nAl iniciar y el otro 50% al finalizar la instalación\nDespués del primer pago se estimula 10 días para\nLa instalación"
   )
 
   // Financials
-  const [advance, setAdvance] = useState<number>(528000)
+  const [advance, setAdvance] = useState<number>(0)
   const [isCustomAdvance, setIsCustomAdvance] = useState(false)
 
   // Client suggestions
@@ -97,10 +97,10 @@ export default function DashboardPage() {
     initData()
   }, [])
 
-  // Keep advance updated to 60% of total if not overridden by custom input
+  // Keep advance updated to 50% of total if not overridden by custom input
   useEffect(() => {
     if (!isCustomAdvance) {
-      setAdvance(Math.round(total * 0.6))
+      setAdvance(Math.round(total * 0.5))
     }
   }, [total, isCustomAdvance])
 
@@ -572,7 +572,7 @@ export default function DashboardPage() {
                     className="rounded text-primary focus:ring-primary"
                   />
                   <label htmlFor="customAdvance" className="text-sm text-gray-600">
-                    Establecer adelanto personalizado (Desmarcado calcula 60%)
+                    Establecer adelanto personalizado (Desmarcado calcula 50%)
                   </label>
                 </div>
 
@@ -633,49 +633,50 @@ export default function DashboardPage() {
             {/* Document Frame */}
             <div 
               ref={invoiceRef} 
-              className="bg-white border border-gray-300 rounded-xl shadow-lg p-8 max-w-[600px] mx-auto text-gray-800 font-sans" 
-              style={{ minHeight: '800px' }}
+              className="bg-white rounded-xl shadow-lg p-8 max-w-[600px] mx-auto font-sans" 
+              style={{ minHeight: '800px', backgroundColor: '#ffffff', border: '1px solid #d1d5db', color: '#1f2937' }}
             >
               {/* Header */}
-              <div className="flex justify-between items-start border-b-2 border-gray-900 pb-4 mb-4">
+              <div className="flex justify-between items-start pb-4 mb-4" style={{ borderBottom: '2px solid #111827' }}>
                 <div className="flex items-center gap-3">
                   <img 
                     src="/logo.png" 
                     alt="D'Mobel Logo" 
-                    className="w-14 h-14 object-contain rounded-full bg-white" 
+                    className="w-14 h-14 object-contain rounded-full" 
+                    style={{ backgroundColor: '#ffffff' }}
                   />
                   <div className="flex flex-col">
-                    <span className="text-lg font-bold tracking-tight text-gray-900">D'MOBEL CR</span>
-                    <span className="text-[10px] text-gray-500 tracking-wider">Mueblería y Diseño</span>
+                    <span className="text-lg font-bold tracking-tight" style={{ color: '#111827' }}>D'MOBEL CR</span>
+                    <span className="text-[10px] tracking-wider" style={{ color: '#6b7280' }}>Mueblería y Diseño</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-sm font-bold text-gray-900 block mb-1">FACTURA #{invoiceNumber}</span>
-                  <div className="w-32 h-[1px] bg-gray-300 ml-auto mb-3"></div>
-                  <span className="text-xs text-gray-500">Fecha {date.split('-').reverse().join('/')}</span>
+                  <span className="text-sm font-bold block mb-1" style={{ color: '#111827' }}>FACTURA #{invoiceNumber}</span>
+                  <div className="w-32 h-[1px] ml-auto mb-3" style={{ backgroundColor: '#d1d5db' }}></div>
+                  <span className="text-xs" style={{ color: '#6b7280' }}>Fecha {date.split('-').reverse().join('/')}</span>
                 </div>
               </div>
 
               {/* Vendor & Buyer details */}
               <div className="grid grid-cols-2 gap-4 text-xs mb-6">
-                <div className="border-r border-gray-200 pr-4">
-                  <p className="font-bold uppercase tracking-wider mb-2 text-gray-900">VENDEDOR {seller.agent}</p>
+                <div className="pr-4" style={{ borderRight: '1px solid #e5e7eb' }}>
+                  <p className="font-bold uppercase tracking-wider mb-2" style={{ color: '#111827' }}>VENDEDOR {seller.agent}</p>
                   <table className="w-full">
                     <tbody>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">CEDULA</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>CEDULA</td>
                         <td className="font-semibold">{seller.id}</td>
                       </tr>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">NOMBRE</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>NOMBRE</td>
                         <td className="font-semibold">{seller.name}</td>
                       </tr>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">DIRECCION</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>DIRECCION</td>
                         <td className="font-semibold">{seller.address}</td>
                       </tr>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">Tel.</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>Tel.</td>
                         <td className="font-semibold">{seller.phone}</td>
                       </tr>
                     </tbody>
@@ -683,19 +684,19 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="pl-4">
-                  <p className="font-bold uppercase tracking-wider mb-2 text-gray-900">COMPRADOR</p>
+                  <p className="font-bold uppercase tracking-wider mb-2" style={{ color: '#111827' }}>COMPRADOR</p>
                   <table className="w-full">
                     <tbody>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">NOMBRE</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>NOMBRE</td>
                         <td className="font-semibold min-h-[16px] inline-block">{buyer.name || '—'}</td>
                       </tr>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">DIRECCION</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>DIRECCION</td>
                         <td className="font-semibold min-h-[16px] inline-block">{buyer.address || '—'}</td>
                       </tr>
                       <tr>
-                        <td className="text-gray-500 uppercase pr-2 py-0.5">Tel.</td>
+                        <td className="uppercase pr-2 py-0.5" style={{ color: '#6b7280' }}>Tel.</td>
                         <td className="font-semibold min-h-[16px] inline-block">{buyer.phone || '—'}</td>
                       </tr>
                     </tbody>
@@ -704,13 +705,13 @@ export default function DashboardPage() {
               </div>
 
               {/* Separation line */}
-              <div className="border-b-2 border-gray-900 mb-4"></div>
+              <div className="mb-4" style={{ borderBottom: '2px solid #111827' }}></div>
 
               {/* Items Table */}
               <div className="mb-6">
                 <table className="w-full text-xs text-left">
                   <thead>
-                    <tr className="font-bold uppercase tracking-wider border-b border-gray-300 text-gray-900">
+                    <tr className="font-bold uppercase tracking-wider text-gray-900" style={{ borderBottom: '1px solid #d1d5db', color: '#111827' }}>
                       <th className="py-2 w-10"></th>
                       <th className="py-2">DESCRIPCION</th>
                       <th className="py-2 text-right">PRECIO</th>
@@ -719,20 +720,20 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {items.map((item, index) => (
-                      <tr key={item.id} className="border-b border-gray-100 align-top">
-                        <td className="py-3 text-gray-500">{index + 1}</td>
+                      <tr key={item.id} className="align-top" style={{ borderBottom: '1px solid #f3f4f6' }}>
+                        <td className="py-3" style={{ color: '#6b7280' }}>{index + 1}</td>
                         <td className="py-3 pr-4">
-                          <p className="font-bold text-gray-900">{item.description || 'Sin descripción'}</p>
+                          <p className="font-bold" style={{ color: '#111827' }}>{item.description || 'Sin descripción'}</p>
                           {item.details && (
-                            <p className="text-[10px] text-gray-500 mt-1 whitespace-pre-line leading-relaxed">
+                            <p className="text-[10px] mt-1 whitespace-pre-line leading-relaxed" style={{ color: '#6b7280' }}>
                               {item.details}
                             </p>
                           )}
                         </td>
-                        <td className="py-3 text-right">
+                        <td className="py-3 text-right" style={{ color: '#1f2937' }}>
                           {item.price > 0 ? formatCurrency(item.price) : '—'}
                         </td>
-                        <td className="py-3 text-right">
+                        <td className="py-3 text-right" style={{ color: '#1f2937' }}>
                           {item.quantity ? item.quantity.toFixed(2).replace('.', ',') : '0,00'}
                         </td>
                       </tr>
@@ -743,23 +744,23 @@ export default function DashboardPage() {
 
               {/* Notes */}
               <div className="mb-8">
-                <p className="text-xs font-bold uppercase tracking-wider border-b border-gray-300 pb-1 mb-2 text-gray-900">NOTA</p>
-                <p className="text-[10px] text-gray-500 whitespace-pre-line leading-relaxed">
+                <p className="text-xs font-bold uppercase tracking-wider pb-1 mb-2" style={{ borderBottom: '1px solid #d1d5db', color: '#111827' }}>NOTA</p>
+                <p className="text-[10px] whitespace-pre-line leading-relaxed" style={{ color: '#6b7280' }}>
                   {notes || 'Sin notas especiales.'}
                 </p>
               </div>
 
               {/* Totals Box */}
-              <div className="w-72 ml-auto text-xs border-t-2 border-gray-900 pt-3 space-y-2">
+              <div className="w-72 ml-auto text-xs pt-3 space-y-2" style={{ borderTop: '2px solid #111827' }}>
                 <div className="flex justify-between items-center font-bold">
-                  <span className="uppercase text-gray-900">ADELANTO</span>
+                  <span className="uppercase" style={{ color: '#111827' }}>ADELANTO</span>
                   <span>{formatCurrency(advance)}</span>
                 </div>
                 <div className="flex justify-between items-center font-bold">
-                  <span className="uppercase text-gray-900">SALDO</span>
+                  <span className="uppercase" style={{ color: '#111827' }}>SALDO</span>
                   <span>{formatCurrency(balance)}</span>
                 </div>
-                <div className="flex justify-between items-center bg-blue-100 text-primary p-2.5 rounded font-bold text-sm">
+                <div className="flex justify-between items-center p-2.5 rounded font-bold text-sm" style={{ backgroundColor: '#dbeafe', color: '#1e40af' }}>
                   <span className="uppercase">TOTAL</span>
                   <span>{formatCurrency(total)}</span>
                 </div>
