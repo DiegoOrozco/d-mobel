@@ -102,13 +102,6 @@ export default function AdminsPage() {
           </button>
         </form>
       </div>
-
-      <div className="mt-6 bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700 leading-relaxed">
-        <h3 className="font-semibold uppercase tracking-wider mb-1">Nota de Seguridad</h3>
-        <p>
-          Esta interfaz utiliza la API de registro de Supabase Auth. Los nuevos administradores tendrán los mismos privilegios para emitir facturas, editar la landing page y registrar otras cuentas. Asegúrate de ingresar correos corporativos válidos.
-        </p>
-      </div>
     </div>
   )
 }
