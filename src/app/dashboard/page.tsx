@@ -55,9 +55,7 @@ export default function DashboardPage() {
   ])
 
   // Notes
-  const [notes, setNotes] = useState(
-    "Método de trabajo se da un adelanto del 50%\nAl iniciar y el otro 50% al finalizar la instalación\nDespués del primer pago se estimula 10 días para\nLa instalación"
-  )
+  const [notes, setNotes] = useState("")
 
   // Financials
   const [advance, setAdvance] = useState<number>(0)
@@ -410,7 +408,7 @@ export default function DashboardPage() {
                     setShowSuggestions(true)
                   }}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder="ej. Melissa Saborío"
+                  placeholder="ej. Nombre del Cliente"
                   className="w-full text-sm border border-gray-300 rounded-lg p-2.5 focus:ring-1 focus:ring-primary focus:outline-none"
                 />
                 {showSuggestions && buyer.name && (
