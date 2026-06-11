@@ -247,11 +247,10 @@ export default function LandingEditorPage() {
         </button>
       </header>
 
-      {/* Supabase Storage Instructions Alert */}
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs text-amber-800 leading-relaxed shadow-sm">
         <h3 className="font-semibold uppercase tracking-wider mb-1">Para habilitar la subida directa de imágenes:</h3>
         <p>
-          Debes ir a tu consola de **Supabase -> Storage**, crear un nuevo Bucket llamado **proyectos** y configurarlo como **Público (Public)**. Esto te permitirá seleccionar archivos de tu computadora y subirlos directamente aquí.
+          Debes ir a tu consola de Supabase, entrar a la sección de Storage, crear un nuevo Bucket llamado **proyectos** y configurarlo como **Público (Public)**. Esto te permitirá seleccionar archivos de tu computadora y subirlos directamente aquí.
         </p>
       </div>
 
