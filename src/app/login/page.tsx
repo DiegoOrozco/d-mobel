@@ -1,5 +1,6 @@
 import { login } from './actions'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default async function LoginPage({
   searchParams,
@@ -11,9 +12,13 @@ export default async function LoginPage({
     <div className="flex flex-col min-h-screen bg-background items-center justify-center p-6">
       <div className="w-full max-w-md glass-panel p-8 rounded-2xl shadow-xl border border-border-color">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary mx-auto flex items-center justify-center text-white font-bold text-2xl mb-4">
-            D'
-          </div>
+          <Image 
+            src="/logo.png" 
+            alt="D'Mobel Logo" 
+            width={60} 
+            height={60} 
+            className="mx-auto object-contain rounded-full mb-4" 
+          />
           <h1 className="text-2xl font-bold text-gray-900">Portal Interno</h1>
           <p className="text-gray-500 mt-2 text-sm">Accede al panel de administración de D'Mobel</p>
         </div>

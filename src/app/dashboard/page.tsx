@@ -638,11 +638,12 @@ export default function DashboardPage() {
             >
               {/* Header */}
               <div className="flex justify-between items-start border-b-2 border-gray-900 pb-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-16 h-16 rounded-full border-[3px] border-primary flex items-center justify-center relative bg-white">
-                    <span className="text-primary font-bold text-2xl absolute left-3 top-2">D</span>
-                    <span className="text-gray-900 font-serif text-3xl absolute right-2 bottom-1 font-bold">M</span>
-                  </div>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="/logo.png" 
+                    alt="D'Mobel Logo" 
+                    className="w-14 h-14 object-contain rounded-full bg-white" 
+                  />
                   <div className="flex flex-col">
                     <span className="text-lg font-bold tracking-tight text-gray-900">D'MOBEL CR</span>
                     <span className="text-[10px] text-gray-500 tracking-wider">Mueblería y Diseño</span>

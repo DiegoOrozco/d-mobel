@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { logout } from '@/app/login/actions'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
@@ -20,10 +21,14 @@ export default async function DashboardLayout({
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-border-color flex flex-col shadow-sm">
         <div className="h-20 flex items-center px-6 border-b border-border-color">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg">
-              D'
-            </div>
+          <div className="flex items-center gap-3">
+            <Image 
+              src="/logo.png" 
+              alt="D'Mobel Logo" 
+              width={35} 
+              height={35} 
+              className="object-contain rounded-full" 
+            />
             <span className="font-semibold text-lg tracking-wide text-primary">MOBEL</span>
           </div>
         </div>

@@ -50,10 +50,14 @@ export default async function Home() {
       {/* Navigation */}
       <header className="fixed w-full z-50 glass-panel border-b border-border-color">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">
-              D'
-            </div>
+          <div className="flex items-center gap-3">
+            <Image 
+              src="/logo.png" 
+              alt="D'Mobel Logo" 
+              width={45} 
+              height={45} 
+              className="object-contain rounded-full" 
+            />
             <span className="font-semibold text-xl tracking-wide text-primary">MOBEL</span>
           </div>
           <nav className="hidden md:flex gap-8 text-sm font-medium">
