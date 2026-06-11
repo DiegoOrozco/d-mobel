@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createClient } from '@/utils/supabase/server'
 import ProjectCarousel from './components/ProjectCarousel'
 
+export const dynamic = 'force-dynamic'
+
 // Default hardcoded fallbacks
 const DEFAULT_HERO_TITLE = "Muebles que inspiran tu espacio."
 const DEFAULT_HERO_SUBTITLE = "Transformamos la madera en obras de arte funcionales. Calidad, diseño y confort en cada detalle para tu hogar u oficina."
