@@ -14,6 +14,7 @@ interface ProductItem {
   nombre: string
   descripcion: string
   precio?: number
+  imagen_url?: string
 }
 
 interface ProjectItem {
@@ -68,7 +69,7 @@ export default function LandingEditorPage() {
         // 3. Load products
         const { data: dbProducts } = await supabase.from('landing_productos').select('*').order('orden')
         if (dbProducts) {
-          setProducts(dbProducts.map(p => ({ id: p.id, nombre: p.nombre, descripcion: p.descripcion || '', precio: p.precio })))
+          setProducts(dbProducts.map(p => ({ id: p.id, nombre: p.nombre, descripcion: p.descripcion || '', precio: p.precio, imagen_url: p.imagen_url || '' })))
         }
 
         // 4. Load projects
@@ -100,7 +101,7 @@ export default function LandingEditorPage() {
 
   // Products Helpers
   const handleAddProduct = () => {
-    setProducts([...products, { nombre: "", descripcion: "", precio: 0 }])
+    setProducts([...products, { nombre: "", descripcion: "", precio: 0, imagen_url: "" }])
   }
 
   const handleRemoveProduct = (index: number) => {
@@ -122,6 +123,40 @@ export default function LandingEditorPage() {
 
   const handleProjectChange = (index: number, field: keyof ProjectItem, value: string) => {
     setProjects(projects.map((p, i) => i === index ? { ...p, [field]: value } : p))
+  }
+
+  // Image upload helper for Supabase Storage
+  const handleImageUpload = async (index: number, type: 'project' | 'product', file: File) => {
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`
+      const folder = type === 'project' ? 'gallery' : 'products'
+      const filePath = `${folder}/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('proyectos')
+        .upload(filePath, file)
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      const { data } = supabase.storage
+        .from('proyectos')
+        .getPublicUrl(filePath)
+
+      if (data) {
+        if (type === 'project') {
+          handleProjectChange(index, 'imagen_url', data.publicUrl)
+        } else {
+          handleProductChange(index, 'imagen_url', data.publicUrl)
+        }
+        alert("¡Imagen subida con éxito y enlazada automáticamente!")
+      }
+    } catch (err: any) {
+      console.error(err)
+      alert("Error al subir la imagen. Por favor asegúrate de haber creado el bucket público 'proyectos' en Supabase.")
+    }
   }
 
   // Save changes to Supabase
@@ -161,13 +196,14 @@ export default function LandingEditorPage() {
           nombre: p.nombre,
           descripcion: p.descripcion,
           precio: p.precio || 0,
+          imagen_url: p.imagen_url || '',
           orden: index
         }))
         const { error: prodErr } = await supabase.from('landing_productos').insert(productsToInsert)
         if (prodErr) throw prodErr
       }
 
-      // 4. Sync projects (Galería Slider)
+      // 4. Sync projects
       const { data: currentProjects } = await supabase.from('landing_proyectos').select('id')
       if (currentProjects && currentProjects.length > 0) {
         await supabase.from('landing_proyectos').delete().in('id', currentProjects.map(p => p.id))
@@ -211,6 +247,14 @@ export default function LandingEditorPage() {
         </button>
       </header>
 
+      {/* Supabase Storage Instructions Alert */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-xs text-amber-800 leading-relaxed shadow-sm">
+        <h3 className="font-semibold uppercase tracking-wider mb-1">Para habilitar la subida directa de imágenes:</h3>
+        <p>
+          Debes ir a tu consola de **Supabase -> Storage**, crear un nuevo Bucket llamado **proyectos** y configurarlo como **Público (Public)**. Esto te permitirá seleccionar archivos de tu computadora y subirlos directamente aquí.
+        </p>
+      </div>
+
       {saveStatus.error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
           <strong>Error al guardar:</strong> {saveStatus.error}
@@ -224,7 +268,7 @@ export default function LandingEditorPage() {
       )}
 
       <div className="space-y-8">
-        {/* Hero Section Editing */}
+        {/* Hero Section */}
         <div className="bg-white rounded-xl border border-border-color p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4 text-gray-900 flex items-center gap-2">
             <span className="w-2 h-6 bg-primary rounded-full"></span>
@@ -344,14 +388,26 @@ export default function LandingEditorPage() {
                       />
                     </div>
                     <div className="col-span-12 md:col-span-6">
-                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Enlace / URL de la Imagen</label>
-                      <input
-                        type="text"
-                        value={project.imagen_url}
-                        onChange={(e) => handleProjectChange(index, 'imagen_url', e.target.value)}
-                        placeholder="ej. https://images.unsplash.com/..."
-                        className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
-                      />
+                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Imagen del Proyecto</label>
+                      <div className="flex flex-col gap-2 mt-1">
+                        <input
+                          type="text"
+                          value={project.imagen_url}
+                          onChange={(e) => handleProjectChange(index, 'imagen_url', e.target.value)}
+                          placeholder="Ingresa URL o sube una imagen abajo"
+                          className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
+                        />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleImageUpload(index, 'project', e.target.files[0])
+                            }
+                          }}
+                          className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                        />
+                      </div>
                     </div>
                     <div className="col-span-12">
                       <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Descripción Corta</label>
@@ -417,6 +473,28 @@ export default function LandingEditorPage() {
                         placeholder="0"
                         className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
                       />
+                    </div>
+                    <div className="col-span-12">
+                      <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Imagen del Producto (Opcional)</label>
+                      <div className="flex flex-col gap-2 mt-1">
+                        <input
+                          type="text"
+                          value={product.imagen_url || ''}
+                          onChange={(e) => handleProductChange(index, 'imagen_url', e.target.value)}
+                          placeholder="Ingresa URL o sube una imagen abajo"
+                          className="w-full text-sm border border-gray-300 rounded-lg p-2 bg-white focus:ring-1 focus:ring-primary focus:outline-none"
+                        />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleImageUpload(index, 'product', e.target.files[0])
+                            }
+                          }}
+                          className="text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
+                        />
+                      </div>
                     </div>
                     <div className="col-span-12">
                       <label className="block text-[10px] font-semibold text-gray-500 uppercase mb-0.5">Descripción / Materiales</label>
